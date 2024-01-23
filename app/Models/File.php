@@ -16,8 +16,8 @@ class File extends Model
         $path = Storage::disk('public')->put('files/', $dataFile);
         return File::create([
             'path' => $path,
-            'mime_type' => $dataFile->getClienteOriginalExtension(),
-            'title' => $dataFile->getClientOriginalName(),        
+            'mime_type' => $dataFile->getClientOriginalExtension(),
+            'title' => $dataFile->getClientOriginalName(),    
         ]);
     }
 }
