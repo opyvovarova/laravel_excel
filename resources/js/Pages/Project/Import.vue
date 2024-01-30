@@ -1,9 +1,9 @@
 <template>
     <div>
-        Import 
+        Import
         <div class="flex justify-center">
             <form >
-                <input @change="setExcel"  type="file" ref="file" class="hidden">
+                <input @change="setExcel"  type="file" ref="file" class="hidden" :key="file">
                 <a @click.prevent="selectExcel" href="#" class="block rounded-full bg-green-600 w-32 text-center text-white">Excel</a>
             </form>
              <div v-if="file" class="ml-3">
@@ -36,7 +36,7 @@
                 console.log('file', this.file);
             },
             importExcel() {
-                const formData = new FormData;
+                const formData = new FormData();
                 formData.append('file', this.file);
 
                 this.$inertia.post('/projects/import', formData);

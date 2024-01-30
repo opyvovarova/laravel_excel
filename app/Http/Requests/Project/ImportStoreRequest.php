@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Project;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Nette\Schema\ValidationException;
 
 class ImportStoreRequest extends FormRequest
 {
@@ -21,8 +22,8 @@ class ImportStoreRequest extends FormRequest
      */
     public function rules(): array
 
-    { 
-        
+    {
+
         if(!in_array($this->file->getClientOriginalExtension(), ['xlsx'])) {
             throw \Illuminate\Validation\ValidationException::withMessages(['Incorrect file extension']);
         }

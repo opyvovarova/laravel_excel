@@ -10,6 +10,11 @@ class File extends Model
 {
     protected $quarded = false;
     protected $table = 'files';
+    protected $fillable = [
+        'path',
+        'mime_type',
+        'title',
+    ];
 
     public static function putAndCreate($dataFile)
     {
@@ -17,7 +22,12 @@ class File extends Model
         return File::create([
             'path' => $path,
             'mime_type' => $dataFile->getClientOriginalExtension(),
-            'title' => $dataFile->getClientOriginalName(),    
+            'title' => $dataFile->getClientOriginalName(),
         ]);
+    }
+
+    public function setType($type)
+    {
+        $this->update(['mime_type' => $type]);
     }
 }
