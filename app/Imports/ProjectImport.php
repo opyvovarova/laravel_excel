@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Imports;
+
+use App\Factory\ProjectFactory;
 use App\Models\Project;
 use App\Models\Type;
 use Illuminate\Support\Arr;
@@ -30,25 +32,14 @@ class ProjectImport implements ToCollection, WithHeadingRow
 
             if(!isset($row['naimenovanie'])) continue;
 
-            Project::create([
-                'type_id' => $this->getTypeId($typesMap, $row['tip']),
-                'title' => $row['naimenovanie'],
-                'created_at_time' => Date::excelToDateTimeObject($row['data_sozdaniia']),
-                'contracted_at' => Date::excelToDateTimeObject($row['podpisanie_dogovora']),
-                'deadline'  => Date::excelToDateTimeObject($row['dedlain']),
-                'is_chain' => isset($row['setevik']) ? $this->getBool($row['setevik']) : null,
-                'is_on_time' => isset($row['sdaca_v_srok']) ? $this->getBool($row['sdaca_v_srok']) : null,
-                'has_outsource' => isset($row['nalicie_autsorsinga']) ? $this->getBool($row['nalicie_autsorsinga']) : null,
-                'has_investors' => isset($row['nalicie_investorov']) ? $this->getBool($row['nalicie_investorov']) : null,
-                'worker_count' => $row['kolicestvo_ucastnikov'] ?? null,
-                'service_count' => $row['kolicestvo_uslug'] ?? null,
-                'payment_first_step' => $row['vlozenie_v_pervyi_etap'] ?? null,
-                'payment_second_step' => $row['vlozenie_vo_vtoroi_etap'] ?? null,
-                'payment_third_step' => $row['vlozenie_v_terai_etap'] ?? null,
-                'payment_forth_step' => $row['vlozenie_v_cetvertyi_etap'] ?? null,
-                'comment'  => $row['kommentarii'] ?? null,
-                'effective_value' => $row['znacenie_effektivnosti'] ?? null,
-            ]);
+            $projectFactory = ProjectFactory::make($typesMap, $row);
+
+            Project::updateOrCreate([
+                'type_id' => $projectFactory->getValues()['type_id'],
+                'title' => $projectFactory->getValues()['title'],
+                'created_at_time' => $projectFactory->getValues()['created_at_time'],
+                'contracted_at' => $projectFactory->getValues()['contracted_at'],
+            ], $projectFactory->getValues());
 
         }
 
@@ -66,13 +57,5 @@ class ProjectImport implements ToCollection, WithHeadingRow
         return $map;
     }
 
-    private function getTypeId($map, $title)
-    {
-        return isset($map[$title]) ? $map[$title] : Type::create(['title' => $title])->id;
-    }
 
-    private function getBool($item)
-    {
-        return $item == "Да";
-    }
 }
